@@ -1,0 +1,45 @@
+# Ingress Controller is installed in Kubernetes.
+# This controller is the actual software that runs these routing rules.
+#
+# Requests to host mw.local:
+#    path /user      -> forward to Service api on port 8000
+#    path /container -> forward to Service api on port 8000
+#    path /          -> forward to Service web on port 80
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress # Defines HTTP routing rules for external traffic.
+metadata:
+  name: mw-ingress
+  namespace: mw
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: mw.local # The rule applies only when visiting http://mw.local
+      http:
+        paths:
+          # API endpoint: /user -> forwarded to api service (port 8000)
+          - path: /user
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8000
+
+          # API endpoint: /container -> forwarded to api service (port 8000)
+          - path: /container
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8000
+
+          # All other paths -> forwarded to web service (port 80)
+          - path: /
+            pathType: Prefix # Everything that starts with /
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80

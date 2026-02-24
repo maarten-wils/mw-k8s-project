@@ -1,0 +1,40 @@
+services:
+
+  db:
+    image: postgres:18.2
+    container_name: MW-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: mw
+      POSTGRES_PASSWORD: class
+      POSTGRES_DB: mwdb
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+
+  api:
+    build: ./api
+    container_name: MW-api
+    restart: always
+    environment:
+      DB_HOST: db
+      DB_NAME: mwdb
+      DB_USER: mw
+      DB_PASSWORD: class
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+  web:
+    build: ./web
+    container_name: MW-web
+    ports:
+      - "8080:80"
+    depends_on:
+    - api
+
+volumes:
+  pgdata:

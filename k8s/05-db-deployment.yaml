@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mw-db
+  namespace: mw
+  labels:
+    app: mw-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mw-db
+  template:
+    metadata:
+      labels:
+        app: mw-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:18.2
+          ports:
+            - containerPort: 5432
+
+          # Credentials uit de Secret
+          envFrom:
+            - secretRef:
+                name: mw-db-secret
+
+          volumeMounts:
+            # Persistent storage voor data
+            - name: db-data
+              mountPath: /var/lib/postgresql
+
+            # init.sql uitvoeren bij eerste init
+            - name: db-init
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: mw-db-pvc
+        - name: db-init
+          configMap:
+            name: mw-db-init

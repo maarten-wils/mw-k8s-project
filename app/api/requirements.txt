@@ -1,0 +1,11 @@
+# Web framework (builds the API)
+
+fastapi==0.115.7
+
+# ASGI server (runs the FastAPI app)
+
+uvicorn[standard]==0.41.0
+
+# PostgreSQL database driver (connects Python to PostgreSQL)
+
+psycopg==3.2.13

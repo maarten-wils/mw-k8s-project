@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mw-api
+  namespace: mw
+  labels:
+    app: mw-api
+spec:
+  # later zetten we dit op 2 voor scaling (+2 punten)
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mw-api
+  template:
+    metadata:
+      labels:
+        app: mw-api
+    spec:
+      containers:
+        - name: api
+          image: mw-api:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DB_HOST
+              value: db
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: mw-db-secret
+                  key: POSTGRES_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mw-db-secret
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mw-db-secret
+                  key: POSTGRES_PASSWORD

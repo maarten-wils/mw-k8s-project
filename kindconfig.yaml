@@ -1,0 +1,24 @@
+kind: Cluster # Specify we are creating a cluster
+apiVersion: kind.x-k8s.io/v1alpha4 # Version of the kind config
+name: mw-k8s-project # Name for the cluster
+nodes:
+  - role: control-plane # Create a controller node
+    image: kindest/node:v1.34.3
+    kubeadmConfigPatches: # Configure the controller node
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "ingress-ready=true"
+    extraPortMappings: # Create port mappings to communicate
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+      - containerPort: 443
+        hostPort: 443
+        protocol: TCP
+
+  - role: worker
+    image: kindest/node:v1.34.3
+  - role: worker
+    image: kindest/node:v1.34.3
