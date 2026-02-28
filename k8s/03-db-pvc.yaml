@@ -5,7 +5,7 @@ metadata:
   namespace: mw
 spec:
   accessModes:
-    - ReadWriteOnce # This tells how many users can read/write or if it needs to be read only. 1 node mag het volume tegelijk mounten
+    - ReadWriteOnce # How many users can read/write. 
   resources:
     requests:
-      storage: 1Gi # How much storage we want, 1 gigabyte
+      storage: 1Gi 

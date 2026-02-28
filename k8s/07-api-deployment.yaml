@@ -6,8 +6,7 @@ metadata:
   labels:
     app: mw-api
 spec:
-  # later zetten we dit op 2 voor scaling (+2 punten)
-  replicas: 1
+  replicas: 3 # 3 replicas to prove horizontal scaling and load-balancing
   selector:
     matchLabels:
       app: mw-api
@@ -19,9 +18,29 @@ spec:
       containers:
         - name: api
           image: mw-api:1.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: IfNotPresent  # makes sure the image is only downloaded when not locally present
           ports:
             - containerPort: 8000
+
+# healthcheck that automatically restarts API when unhealthy
+
+          livenessProbe:
+            httpGet:
+              path: /container
+              port: 8000
+            initialDelaySeconds: 10 # seconds to wait after container start before first check
+            periodSeconds: 10 # interval
+            timeoutSeconds: 2 # seconds to wait for a response
+            failureThreshold: 3 # number of failed checks before K8s takes action
+          readinessProbe:
+            httpGet:
+              path: /container
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+
           env:
             - name: DB_HOST
               value: db

@@ -20,19 +20,14 @@ spec:
           image: postgres:18.2
           ports:
             - containerPort: 5432
-
-          # Credentials uit de Secret
-          envFrom:
+          envFrom: # Reference to 02-db-secret.yaml
             - secretRef:
                 name: mw-db-secret
 
-          volumeMounts:
-            # Persistent storage voor data
+          volumeMounts: # Persistent storage for data
             - name: db-data
               mountPath: /var/lib/postgresql
-
-            # init.sql uitvoeren bij eerste init
-            - name: db-init
+            - name: db-init  # init.sql
               mountPath: /docker-entrypoint-initdb.d
       volumes:
         - name: db-data
